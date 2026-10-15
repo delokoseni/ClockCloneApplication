@@ -37,7 +37,7 @@ class MainActivity : ComponentActivity() {
 @PreviewScreenSizes
 @Composable
 fun ClockCloneApplicationApp() {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.ALARM_CLOCKS) }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -69,9 +69,11 @@ enum class AppDestinations(
     val label: String,
     val icon: Int,
 ) {
-    HOME("Home", R.drawable.ic_home),
-    FAVORITES("Favorites", R.drawable.ic_favorite),
-    PROFILE("Profile", R.drawable.ic_account_box),
+    ALARM_CLOCKS("Булильники", R.drawable.ic_alarm_clock),
+    WORLD_CLOCKS("Мировые часы", R.drawable.ic_globe),
+    TIMERS("Таймеры", R.drawable.ic_hourglass),
+    STOPWATCH("Секундомер", R.drawable.ic_timer),
+    SLEEP_MODE("Режим сна", R.drawable.ic_person_in_bed)
 }
 
 @Composable
