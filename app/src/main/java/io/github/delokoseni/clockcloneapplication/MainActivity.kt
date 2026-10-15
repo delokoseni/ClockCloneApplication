@@ -17,10 +17,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import io.github.delokoseni.clockcloneapplication.ui.theme.ClockCloneApplicationTheme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.remember
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,10 +68,13 @@ fun ClockCloneApplicationApp() {
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Text(
-                text = currentDestination.label,
-                modifier = Modifier.padding(innerPadding)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+                AppHeader(title = currentDestination.label)
+            }
         }
     }
 }
@@ -74,4 +88,63 @@ enum class AppDestinations(
     TIMERS("Таймеры", R.drawable.ic_hourglass),
     STOPWATCH("Секундомер", R.drawable.ic_timer),
     SLEEP_MODE("Режим сна", R.drawable.ic_person_in_bed)
+}
+
+@Composable
+fun AppHeader(title: String) {
+    var menuExpanded by remember { mutableStateOf(false) }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(64.dp)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge
+        )
+
+        Box {
+            IconButton(
+                onClick = { menuExpanded = true }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_more_vert),
+                    contentDescription = "Дополнительное меню"
+                )
+            }
+
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Заставка") },
+                    onClick = { menuExpanded = false }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Настройки") },
+                    onClick = { menuExpanded = false }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Политика конфиденциальности") },
+                    onClick = { menuExpanded = false }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Отправить отзыв") },
+                    onClick = { menuExpanded = false }
+                )
+
+                DropdownMenuItem(
+                    text = { Text("Справка") },
+                    onClick = { menuExpanded = false }
+                )
+            }
+        }
+    }
 }
