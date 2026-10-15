@@ -57,8 +57,8 @@ fun ClockCloneApplicationApp() {
         }
     ) {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Greeting(
-                name = "Android",
+            Text(
+                text = currentDestination.label,
                 modifier = Modifier.padding(innerPadding)
             )
         }
@@ -74,20 +74,4 @@ enum class AppDestinations(
     TIMERS("Таймеры", R.drawable.ic_hourglass),
     STOPWATCH("Секундомер", R.drawable.ic_timer),
     SLEEP_MODE("Режим сна", R.drawable.ic_person_in_bed)
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ClockCloneApplicationTheme {
-        Greeting("Android")
-    }
 }
