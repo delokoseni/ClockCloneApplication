@@ -30,9 +30,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
+import androidx.compose.material3.TimePickerDialog
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.remember
 
 class MainActivity : ComponentActivity() {
@@ -111,9 +116,36 @@ fun ClockCloneApplicationApp() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmTimePickerDialog(onDismiss: () -> Unit, onConfirm: (Int, Int) -> Unit) {
+    val timeState = rememberTimePickerState()
 
+    TimePickerDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Выбор времени")
+        },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onConfirm(
+                        timeState.hour,
+                        timeState.minute
+                    )
+                }
+            ) {
+                Text("ОК")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Отмена")
+            }
+        }
+    ) {
+        TimePicker(state = timeState)
+    }
 }
 
 enum class AppDestinations(
