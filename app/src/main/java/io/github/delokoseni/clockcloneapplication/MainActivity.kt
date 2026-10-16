@@ -119,7 +119,7 @@ fun ClockCloneApplicationApp() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlarmTimePickerDialog(onDismiss: () -> Unit, onConfirm: (Int, Int) -> Unit) {
-    val timeState = rememberTimePickerState()
+    val timeState = rememberTimePickerState(is24Hour = true)
 
     TimePickerDialog(
         onDismissRequest = onDismiss,
