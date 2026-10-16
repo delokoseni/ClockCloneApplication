@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.remember
@@ -67,13 +68,30 @@ fun ClockCloneApplicationApp() {
             }
         }
     ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Scaffold(modifier = Modifier.fillMaxSize()
+        ) { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
                 AppHeader(title = currentDestination.label)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp)
+                ) {
+                    if (currentDestination == AppDestinations.ALARM_CLOCKS) {
+                        Box(
+                            modifier = Modifier.align(Alignment.BottomEnd)
+                        ) {
+                            AddAlarmButton(
+                                onClick = {
+                                }
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -146,5 +164,19 @@ fun AppHeader(title: String) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun AddAlarmButton(
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        onClick = onClick
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_add),
+            contentDescription = "Создать будильник"
+        )
     }
 }
