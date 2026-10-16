@@ -1,6 +1,7 @@
 package io.github.delokoseni.clockcloneapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ClockCloneApplicationApp() {
     var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.ALARM_CLOCKS) }
+    var showTimePicker by rememberSaveable { mutableStateOf(false) }
 
     NavigationSuiteScaffold(
         navigationSuiteItems = {
@@ -87,6 +89,7 @@ fun ClockCloneApplicationApp() {
                         ) {
                             AddAlarmButton(
                                 onClick = {
+                                    showTimePicker = true
                                 }
                             )
                         }
@@ -94,7 +97,23 @@ fun ClockCloneApplicationApp() {
                 }
             }
         }
+        if (showTimePicker) {
+            AlarmTimePickerDialog(
+                onDismiss = {
+                    showTimePicker = false
+                },
+                onConfirm = { hour, minute ->
+                    showTimePicker = false
+                    Log.d("AlarmClock", "Выбрано время: $hour:$minute")
+                }
+            )
+        }
     }
+}
+
+@Composable
+fun AlarmTimePickerDialog(onDismiss: () -> Unit, onConfirm: (Int, Int) -> Unit) {
+
 }
 
 enum class AppDestinations(
