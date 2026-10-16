@@ -1,10 +1,15 @@
 package io.github.delokoseni.clockcloneapplication
 
+import android.app.AlarmManager
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
@@ -34,13 +39,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import kotlin.jvm.java
+import android.provider.Settings
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -52,6 +63,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @PreviewScreenSizes
 @Composable
 fun ClockCloneApplicationApp() {
@@ -89,6 +101,7 @@ fun ClockCloneApplicationApp() {
                         .padding(16.dp)
                 ) {
                     if (currentDestination == AppDestinations.ALARM_CLOCKS) {
+                        AlarmList()
                         Box(
                             modifier = Modifier.align(Alignment.BottomEnd)
                         ) {
@@ -218,16 +231,67 @@ fun AppHeader(title: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun AddAlarmButton(
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val alarmManager = context.getSystemService(
+        AlarmManager::class.java
+    )
     FloatingActionButton(
-        onClick = onClick
+        onClick = {
+            if (alarmManager.canScheduleExactAlarms()) {
+                onClick()
+            } else {
+                val intent = Intent(
+                    Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                    "package:${context.packageName}".toUri()
+                )
+
+                context.startActivity(intent)
+            }
+        }
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_add),
             contentDescription = "Создать будильник"
+        )
+    }
+}
+
+@Composable
+fun AlarmList() {
+    var isAlarmEnabled by rememberSaveable {
+        mutableStateOf(true)
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column {
+            Text(
+                text = "09:25",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Text(
+                text = if (isAlarmEnabled) {
+                    "Установлен"
+                } else {
+                    "Не установлен"
+                }
+            )
+        }
+
+        Switch(
+            checked = isAlarmEnabled,
+            onCheckedChange = { isAlarmEnabled = it }
         )
     }
 }
