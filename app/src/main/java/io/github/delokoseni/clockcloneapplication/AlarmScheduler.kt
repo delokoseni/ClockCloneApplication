@@ -5,24 +5,25 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.annotation.RequiresApi
 import java.util.Calendar
 
 object AlarmScheduler {
 
     private const val ALARM_ID = 1001
 
-    @RequiresApi(Build.VERSION_CODES.S)
     fun scheduleAlarm(
         context: Context,
         hour: Int,
         minute: Int
-    ) {
+    ): Boolean {
         val alarmManager =
             context.getSystemService(AlarmManager::class.java)
 
-        if (!alarmManager.canScheduleExactAlarms()) {
-            return
+        if (
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.S &&
+            !alarmManager.canScheduleExactAlarms()
+        ) {
+            return false
         }
 
         val calendar = Calendar.getInstance().apply {
@@ -53,6 +54,7 @@ object AlarmScheduler {
             ),
             pendingIntent
         )
+        return true
     }
 
     fun cancelAlarm(context: Context) {

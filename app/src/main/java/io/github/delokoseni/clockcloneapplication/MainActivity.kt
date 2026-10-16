@@ -263,8 +263,9 @@ fun AddAlarmButton(
 
 @Composable
 fun AlarmList() {
+    val context = LocalContext.current
     var isAlarmEnabled by rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
 
     Row(
@@ -276,7 +277,7 @@ fun AlarmList() {
     ) {
         Column {
             Text(
-                text = "09:25",
+                text = "09:54",
                 style = MaterialTheme.typography.headlineMedium
             )
 
@@ -291,7 +292,18 @@ fun AlarmList() {
 
         Switch(
             checked = isAlarmEnabled,
-            onCheckedChange = { isAlarmEnabled = it }
+            onCheckedChange = { enabled ->
+                if (enabled) {
+                    isAlarmEnabled = AlarmScheduler.scheduleAlarm(
+                        context = context,
+                        hour = 9,
+                        minute = 54
+                    )
+                } else {
+                    AlarmScheduler.cancelAlarm(context)
+                    isAlarmEnabled = false
+                }
+            }
         )
     }
 }
