@@ -2,6 +2,7 @@ package io.github.delokoseni.clockcloneapplication
 
 import android.Manifest
 import android.app.AlarmManager
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -253,6 +254,18 @@ fun AddAlarmButton(
     FloatingActionButton(
         onClick = {
             if (
+                Build.VERSION.SDK_INT >= 34 &&
+                !context.getSystemService(NotificationManager::class.java)
+                    .canUseFullScreenIntent()
+            ) {
+                val intent = Intent(
+                    Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                    "package:${context.packageName}".toUri()
+                )
+                context.startActivity(intent)
+                return@FloatingActionButton
+            }
+            if (
                 Build.VERSION.SDK_INT >= 33 &&
                 ContextCompat.checkSelfPermission(
                     context,
@@ -318,8 +331,8 @@ fun AlarmList() {
                 if (enabled) {
                     isAlarmEnabled = AlarmScheduler.scheduleAlarm(
                         context = context,
-                        hour = 9,
-                        minute = 54
+                        hour = 10,
+                        minute = 19
                     )
                 } else {
                     AlarmScheduler.cancelAlarm(context)

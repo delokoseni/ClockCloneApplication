@@ -16,6 +16,7 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import java.util.Calendar
 import android.content.pm.ServiceInfo
+import android.app.PendingIntent
 
 class AlarmService : Service() {
 
@@ -38,6 +39,12 @@ class AlarmService : Service() {
     }
 
     private fun createNotification(): Notification {
+        val alarmIntent = PendingIntent.getActivity(
+            this,
+            1002,
+            Intent(this, AlarmActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_alarm_clock)
             .setContentTitle("Будильник")
@@ -45,6 +52,8 @@ class AlarmService : Service() {
             .setCategory(NotificationCompat.CATEGORY_ALARM)
             .setPriority(NotificationCompat.PRIORITY_MAX)
             .setOngoing(true)
+            .setContentIntent(alarmIntent)
+            .setFullScreenIntent(alarmIntent, true)
             .build()
     }
 
