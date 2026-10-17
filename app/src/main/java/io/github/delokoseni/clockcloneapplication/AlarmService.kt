@@ -1,6 +1,9 @@
 package io.github.delokoseni.clockcloneapplication
 
 import android.Manifest
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.media.MediaPlayer
@@ -10,12 +13,42 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import androidx.annotation.RequiresPermission
+import androidx.core.app.NotificationCompat
 import java.util.Calendar
+import android.content.pm.ServiceInfo
 
 class AlarmService : Service() {
 
     private var player: MediaPlayer? = null
     private var vibrator: Vibrator? = null
+
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                "Будильник",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Уведомления работающего будильника"
+            }
+
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(channel)
+        }
+    }
+
+    private fun createNotification(): Notification {
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_alarm_clock)
+            .setContentTitle("Будильник")
+            .setContentText("Будильник звонит")
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setOngoing(true)
+            .build()
+    }
+
+
 
     @RequiresPermission(Manifest.permission.VIBRATE)
     override fun onStartCommand(
@@ -35,18 +68,33 @@ class AlarmService : Service() {
                 val snoozeTime = Calendar.getInstance().apply {
                     add(Calendar.MINUTE, 5)
                 }
-                AlarmScheduler.scheduleAlarm(
+                val scheduled = AlarmScheduler.scheduleAlarm(
                     this,
                     snoozeTime.get(Calendar.HOUR_OF_DAY),
                     snoozeTime.get(Calendar.MINUTE)
                 )
+                if (!scheduled) {
+                    android.util.Log.e(
+                        "AlarmClock",
+                        "Не удалось отложить будильник: нет разрешения на точные будильники"
+                    )
+                }
                 return START_NOT_STICKY
             }
         }
-
+        createNotificationChannel()
+        val notification = createNotification()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(
+                NOTIFICATION_ID,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+            )
+        } else {
+            startForeground(NOTIFICATION_ID, notification)
+        }
         startSound()
         startVibration()
-
         return START_NOT_STICKY
     }
 
@@ -109,5 +157,8 @@ class AlarmService : Service() {
 
         const val ACTION_SNOOZE =
             "io.github.delokoseni.clockcloneapplication.SNOOZE_ALARM"
+
+        private const val CHANNEL_ID = "alarm_channel"
+        private const val NOTIFICATION_ID = 1001
     }
 }
