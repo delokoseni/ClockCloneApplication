@@ -32,14 +32,13 @@ class AlarmService : Service() {
 
             ACTION_SNOOZE -> {
                 stopAlarm()
+                val snoozeTime = Calendar.getInstance().apply {
+                    add(Calendar.MINUTE, 5)
+                }
                 AlarmScheduler.scheduleAlarm(
                     this,
-                    Calendar.getInstance().apply {
-                        add(Calendar.MINUTE, 5)
-                    }.get(Calendar.HOUR_OF_DAY),
-                    Calendar.getInstance().apply {
-                        add(Calendar.MINUTE, 5)
-                    }.get(Calendar.MINUTE)
+                    snoozeTime.get(Calendar.HOUR_OF_DAY),
+                    snoozeTime.get(Calendar.MINUTE)
                 )
                 return START_NOT_STICKY
             }
