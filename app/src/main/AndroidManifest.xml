@@ -29,6 +29,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".AlarmActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:theme="@style/Theme.ClockCloneApplication" />
         <receiver android:name=".AlarmReceiver" android:enabled="true" android:exported="false" />
         <service
             android:name=".AlarmService"
